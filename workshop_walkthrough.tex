@@ -1,0 +1,200 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{parskip}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  urlcolor=blue!60!black
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!8}
+}
+
+\title{LLM Coding Workflow Workshop\\\large 2-Hour Hands-On Walkthrough}
+\author{Razvan Marinescu --- UC Santa Cruz}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Goal}
+By the end of this session, each participant should be able to:
+\begin{itemize}[leftmargin=1.2em]
+  \item Use LLMs in \textbf{Cursor} to write new code and modify existing code.
+  \item Use an \textbf{LLM CLI agent} (Codex or Claude CLI) for file/system operations.
+  \item Build a small local data workflow: load CSV data, compute summaries, and generate plots.
+  \item Produce a short document artifact (Markdown and optional LaTeX table) generated from local data.
+\end{itemize}
+
+\section*{Materials in this folder}
+\begin{itemize}[leftmargin=1.2em]
+  \item \texttt{data/students\_scores.csv}, \texttt{data/model\_runs.csv}
+  \item \texttt{src/starter\_analysis.py}
+  \item \texttt{src/text\_utils.py}
+  \item \texttt{src/generate\_report.py}
+  \item \texttt{src/plot\_metrics.py}
+  \item \texttt{tests/test\_text\_utils.py}
+  \item \texttt{requirements.txt}, \texttt{Makefile}
+\end{itemize}
+
+\section*{Session timeline (120 min)}
+\begin{longtable}{p{0.15\linewidth}p{0.8\linewidth}}
+\toprule
+Time & Activity \\
+\midrule
+0--10 min & Environment checks + quick LLM sanity prompts in Cursor and CLI \\
+10--35 min & Exercise A: write new code with LLM assistance (analysis function) \\
+35--60 min & Exercise B: modify existing code + test-driven bug fixing \\
+60--85 min & Exercise C: use CLI agent for file tasks and report generation \\
+85--105 min & Exercise D: generate plots/charts from local CSV data \\
+105--120 min & Exercise E: produce document artifacts (Markdown + optional LaTeX table), wrap-up \\
+\bottomrule
+\end{longtable}
+
+\section*{Exercise 0 --- Setup check (10 min)}
+\textbf{Run in terminal:}
+\begin{lstlisting}
+cd llm-coding
+command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
+uv venv .venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+uv run python src/starter_analysis.py
+uv run python src/generate_report.py
+uv run python src/plot_metrics.py
+\end{lstlisting}
+
+\textbf{Quick prompts (Cursor and CLI):}
+\begin{itemize}[leftmargin=1.2em]
+  \item ``Read this folder and explain what each file is for.''
+  \item ``Suggest 3 improvements to make this mini-project clearer for a beginner.''
+\end{itemize}
+
+\section*{Exercise A --- Write new code in Cursor (25 min)}
+Open \texttt{src/starter\_analysis.py}. There are TODOs in:
+\begin{itemize}[leftmargin=1.2em]
+  \item \texttt{compute\_group\_summary(...)}
+  \item \texttt{find\_top\_improvers(...)}
+\end{itemize}
+
+\textbf{Task:}
+\begin{enumerate}[leftmargin=1.4em]
+  \item Ask Cursor to implement both TODOs.
+  \item Ask Cursor to add docstrings and type hints if missing.
+  \item Run:
+\begin{lstlisting}
+uv run python src/starter_analysis.py
+\end{lstlisting}
+\end{enumerate}
+
+\textbf{Prompt examples:}
+\begin{itemize}[leftmargin=1.2em]
+  \item ``Implement TODO functions in this file only. Keep output deterministic and concise.''
+  \item ``Before editing, explain your plan in 3 bullets; after editing, show what changed.''
+\end{itemize}
+
+\section*{Exercise B --- Modify code + tests (25 min)}
+Open \texttt{src/text\_utils.py}. It contains intentionally weak behavior.
+
+\textbf{Task:}
+\begin{enumerate}[leftmargin=1.4em]
+  \item Run tests: \texttt{uv run pytest -q} (or \texttt{make test})
+  \item Use Cursor to fix failing tests in \texttt{tests/test\_text\_utils.py}
+  \item Ensure all tests pass.
+\end{enumerate}
+
+\textbf{Prompt examples:}
+\begin{itemize}[leftmargin=1.2em]
+  \item ``Read failing tests and patch only src/text\_utils.py. Do not change tests unless absolutely necessary.''
+  \item ``Keep functions simple and robust for edge cases (extra spaces, mixed case, punctuation).'' 
+\end{itemize}
+
+\section*{Exercise C --- CLI agent workflow (25 min)}
+Use Codex/Claude CLI to do a small multi-file task:
+\begin{enumerate}[leftmargin=1.4em]
+  \item Ask the CLI to inspect project structure.
+  \item Ask it to run \texttt{uv run python src/generate\_report.py}.
+  \item Ask it to improve \texttt{reports/workshop\_report.md} by adding one extra section:
+  ``Potential failure modes in this dataset and mitigation ideas.''
+\end{enumerate}
+
+\textbf{Prompt template:}
+\begin{lstlisting}
+You are helping with a local Python project.
+1) inspect files
+2) run report generation
+3) update the report with a short "failure modes" section
+4) do not add new dependencies
+5) show me exactly what you changed
+\end{lstlisting}
+
+\section*{Exercise D --- Plots/charts from local data (20 min)}
+Run:
+\begin{lstlisting}
+uv run python src/plot_metrics.py
+\end{lstlisting}
+
+This should generate:
+\begin{itemize}[leftmargin=1.2em]
+  \item \texttt{reports/score\_by\_group.png}
+  \item \texttt{reports/accuracy\_vs\_latency.png}
+\end{itemize}
+
+\textbf{Stretch task:}
+Ask an LLM to add one more plot (example: token usage distribution by model).
+
+\section*{Exercise E --- Document workflow (15 min)}
+\textbf{Option 1 (fast):} update \texttt{reports/workshop\_report.md}.\\
+\textbf{Option 2 (LaTeX):} ask the LLM to generate a table from CSV summaries and paste into a \texttt{tabular} block.
+
+\textbf{Example prompt:}
+\begin{lstlisting}
+From data/students_scores.csv, compute mean assignment/midterm/final by group,
+and produce a LaTeX tabular snippet with booktabs formatting.
+\end{lstlisting}
+
+\section*{Best practices to emphasize}
+\begin{itemize}[leftmargin=1.2em]
+  \item Ask for a plan first, then ask for edits.
+  \item Scope the edit: file(s), constraints, and expected output.
+  \item Require verification steps (tests, script runs, lint checks).
+  \item Prefer iterative prompts over one giant prompt.
+  \item Keep humans in the loop for correctness, reproducibility, and security.
+\end{itemize}
+
+\section*{Common failure modes to discuss}
+\begin{itemize}[leftmargin=1.2em]
+  \item Silent hallucinations (invented functions, files, APIs).
+  \item Over-broad code edits when prompt scope is vague.
+  \item Incomplete environment assumptions (wrong Python/package versions).
+  \item Data leakage/privacy risks when sharing sensitive content.
+  \item Overconfidence in generated analysis without validation.
+\end{itemize}
+
+\section*{Wrap-up checklist}
+\begin{itemize}[leftmargin=1.2em]
+  \item[] [ ] I can use Cursor to create and edit multi-file code changes.
+  \item[] [ ] I can use an LLM CLI agent to run commands and modify files safely.
+  \item[] [ ] I can generate and validate local data plots and summaries.
+  \item[] [ ] I understand at least 3 failure modes and mitigation strategies.
+\end{itemize}
+
+\vspace{1em}
+\noindent\textbf{Optional extension for next session:} multi-agent orchestration where one agent writes code, one runs tests, and one performs review.
+
+\end{document}
+

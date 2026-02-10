@@ -1,0 +1,14 @@
+run_id,model,temperature,prompt_version,latency_ms,tokens,accuracy
+R001,gpt-4.1,0.1,v1,1420,820,0.86
+R002,gpt-4.1,0.3,v2,1580,910,0.88
+R003,gpt-4.1-mini,0.2,v1,880,640,0.79
+R004,gpt-4.1-mini,0.4,v3,930,700,0.81
+R005,claude-sonnet,0.2,v2,1700,980,0.87
+R006,claude-sonnet,0.5,v3,1820,1060,0.85
+R007,deepseek-coder,0.2,v1,760,590,0.77
+R008,deepseek-coder,0.6,v2,840,680,0.74
+R009,gpt-4.1,0.0,v4,1500,890,0.90
+R010,claude-sonnet,0.1,v4,1760,1020,0.89
+R011,gpt-4.1-mini,0.1,v4,910,655,0.82
+R012,deepseek-coder,0.3,v3,790,615,0.78
+
