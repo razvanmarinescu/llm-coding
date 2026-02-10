@@ -8,7 +8,8 @@ def normalize_name(name: str) -> str:
     Normalize a personal name.
     Intentionally weak implementation for the workshop exercise.
     """
-    return name.strip().title()
+    cleaned = " ".join(name.split())
+    return cleaned.title()
 
 
 def slugify(text: str) -> str:
@@ -16,7 +17,8 @@ def slugify(text: str) -> str:
     Convert text into a lowercase slug.
     Intentionally weak implementation for the workshop exercise.
     """
-    return text.lower().replace(" ", "-")
+    slug = re.sub(r"[^a-z0-9]+", "-", text.lower())
+    return slug.strip("-")
 
 
 def extract_emails(text: str) -> list[str]:

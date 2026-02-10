@@ -21,7 +21,20 @@ def compute_group_summary(df: pd.DataFrame) -> pd.DataFrame:
       - mean hours_studied
       - count of students
     """
-    raise NotImplementedError("TODO: implement compute_group_summary")
+    summary = (
+        df.groupby("group", as_index=False)
+        .agg(
+            assignment_mean=("assignment", "mean"),
+            midterm_mean=("midterm", "mean"),
+            final_mean=("final", "mean"),
+            hours_studied_mean=("hours_studied", "mean"),
+            student_count=("student_id", "count"),
+        )
+        .round(2)
+        .sort_values("group")
+        .reset_index(drop=True)
+    )
+    return summary
 
 
 def find_top_improvers(df: pd.DataFrame, n: int = 3) -> pd.DataFrame:
@@ -31,7 +44,16 @@ def find_top_improvers(df: pd.DataFrame, n: int = 3) -> pd.DataFrame:
     Return top n students sorted by highest improvement.
     Include columns: student_id, group, assignment, final, improvement.
     """
-    raise NotImplementedError("TODO: implement find_top_improvers")
+    with_improvement = df.assign(improvement=df["final"] - df["assignment"])
+    top = (
+        with_improvement.sort_values(
+            by=["improvement", "student_id"], ascending=[False, True]
+        )
+        .head(n)
+        .loc[:, ["student_id", "group", "assignment", "final", "improvement"]]
+        .reset_index(drop=True)
+    )
+    return top
 
 
 def main() -> None:

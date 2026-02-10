@@ -8,20 +8,12 @@
 \usepackage{longtable}
 \usepackage{enumitem}
 \usepackage{xcolor}
-\usepackage{listings}
 \usepackage{parskip}
 
 \hypersetup{
   colorlinks=true,
   linkcolor=blue!60!black,
   urlcolor=blue!60!black
-}
-
-\lstset{
-  basicstyle=\ttfamily\small,
-  breaklines=true,
-  frame=single,
-  backgroundcolor=\color{gray!8}
 }
 
 \title{LLM Coding Workflow Workshop\\\large 2-Hour Hands-On Walkthrough}
@@ -66,17 +58,31 @@ Time & Activity \\
 \end{longtable}
 
 \section*{Exercise 0 --- Setup check (10 min)}
-\textbf{Run in terminal:}
-\begin{lstlisting}
-cd llm-coding
-command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
-uv venv .venv
-source .venv/bin/activate
-uv pip install -r requirements.txt
-uv run python src/starter_analysis.py
-uv run python src/generate_report.py
-uv run python src/plot_metrics.py
-\end{lstlisting}
+\textbf{Install uv (pick your OS):}
+\textit{macOS (Homebrew)}
+\begin{itemize}[leftmargin=1.2em]
+  \item \verb|brew install uv|
+\end{itemize}
+\textit{Ubuntu / Linux}
+\begin{itemize}[leftmargin=1.2em]
+  \item \verb|curl -LsSf https://astral.sh/uv/install.sh | sh|
+  \item \verb|source $HOME/.local/bin/env|
+\end{itemize}
+\textit{Check install}
+\begin{itemize}[leftmargin=1.2em]
+  \item \verb|uv --version|
+\end{itemize}
+
+\textbf{Then run in terminal:}
+\begin{itemize}[leftmargin=1.2em]
+  \item \verb|cd llm-coding|
+  \item \verb|uv venv .venv|
+  \item \verb|source .venv/bin/activate|
+  \item \verb|uv pip install -r requirements.txt|
+  \item \verb|uv run python src/starter_analysis.py|
+  \item \verb|uv run python src/generate_report.py|
+  \item \verb|uv run python src/plot_metrics.py|
+\end{itemize}
 
 \textbf{Quick prompts (Cursor and CLI):}
 \begin{itemize}[leftmargin=1.2em]
@@ -95,10 +101,7 @@ Open \texttt{src/starter\_analysis.py}. There are TODOs in:
 \begin{enumerate}[leftmargin=1.4em]
   \item Ask Cursor to implement both TODOs.
   \item Ask Cursor to add docstrings and type hints if missing.
-  \item Run:
-\begin{lstlisting}
-uv run python src/starter_analysis.py
-\end{lstlisting}
+  \item Run: \verb|uv run python src/starter_analysis.py|
 \end{enumerate}
 
 \textbf{Prompt examples:}
@@ -133,20 +136,17 @@ Use Codex/Claude CLI to do a small multi-file task:
 \end{enumerate}
 
 \textbf{Prompt template:}
-\begin{lstlisting}
-You are helping with a local Python project.
-1) inspect files
-2) run report generation
-3) update the report with a short "failure modes" section
-4) do not add new dependencies
-5) show me exactly what you changed
-\end{lstlisting}
+\begin{enumerate}[leftmargin=1.4em]
+  \item You are helping with a local Python project.
+  \item Inspect files.
+  \item Run report generation.
+  \item Update the report with a short ``failure modes'' section.
+  \item Do not add new dependencies.
+  \item Show me exactly what you changed.
+\end{enumerate}
 
 \section*{Exercise D --- Plots/charts from local data (20 min)}
-Run:
-\begin{lstlisting}
-uv run python src/plot_metrics.py
-\end{lstlisting}
+Run: \verb|uv run python src/plot_metrics.py|
 
 This should generate:
 \begin{itemize}[leftmargin=1.2em]
@@ -162,10 +162,10 @@ Ask an LLM to add one more plot (example: token usage distribution by model).
 \textbf{Option 2 (LaTeX):} ask the LLM to generate a table from CSV summaries and paste into a \texttt{tabular} block.
 
 \textbf{Example prompt:}
-\begin{lstlisting}
-From data/students_scores.csv, compute mean assignment/midterm/final by group,
-and produce a LaTeX tabular snippet with booktabs formatting.
-\end{lstlisting}
+\begin{itemize}[leftmargin=1.2em]
+  \item From \texttt{data/students\_scores.csv}, compute mean assignment/midterm/final by group,
+  and produce a LaTeX tabular snippet with booktabs formatting.
+\end{itemize}
 
 \section*{Best practices to emphasize}
 \begin{itemize}[leftmargin=1.2em]
