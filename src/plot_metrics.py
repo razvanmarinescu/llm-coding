@@ -46,6 +46,20 @@ def plot_accuracy_vs_latency(runs: pd.DataFrame) -> Path:
     return out_path
 
 
+def plot_tokens_by_model(runs: pd.DataFrame) -> Path:
+    out_path = REPORTS_DIR / "tokens_by_model.png"
+    plt.figure(figsize=(7, 4))
+    sns.boxplot(data=runs, x="model", y="tokens")
+    plt.title("Token Usage Distribution by Model")
+    plt.xlabel("Model")
+    plt.ylabel("Tokens")
+    plt.xticks(rotation=15)
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150)
+    plt.close()
+    return out_path
+
+
 def main() -> None:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     students = pd.read_csv(STUDENTS_CSV)
@@ -53,8 +67,10 @@ def main() -> None:
 
     a = plot_scores_by_group(students)
     b = plot_accuracy_vs_latency(runs)
+    c = plot_tokens_by_model(runs)
     print(f"Wrote plot: {a}")
     print(f"Wrote plot: {b}")
+    print(f"Wrote plot: {c}")
 
 
 if __name__ == "__main__":

@@ -9,11 +9,24 @@
 \usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage{parskip}
+\usepackage[most]{tcolorbox}
 
 \hypersetup{
   colorlinks=true,
   linkcolor=blue!60!black,
   urlcolor=blue!60!black
+}
+
+\newtcolorbox{promptbox}{
+  colback=blue!5,
+  colframe=blue!60!black,
+  title=Prompt,
+  width=\linewidth,
+  boxsep=2mm,
+  left=1mm,
+  right=1mm,
+  top=1mm,
+  bottom=1mm
 }
 
 \title{LLM Coding Workflow Workshop\\\large 2-Hour Hands-On Walkthrough}
@@ -52,8 +65,9 @@ Time & Activity \\
 10--35 min & Exercise A: write new code with LLM assistance (analysis function) \\
 35--60 min & Exercise B: modify existing code + test-driven bug fixing \\
 60--85 min & Exercise C: use CLI agent for file tasks and report generation \\
-85--105 min & Exercise D: generate plots/charts from local CSV data \\
-105--120 min & Exercise E: produce document artifacts (Markdown + optional LaTeX table), wrap-up \\
+85--100 min & Exercise D: generate plots/charts from local CSV data \\
+100--112 min & Exercise E: generate a stats table script and export LaTeX table \\
+112--120 min & Exercise F: conference-paper LaTeX workflow with LLM debugging \\
 \bottomrule
 \end{longtable}
 
@@ -85,10 +99,12 @@ Time & Activity \\
 \end{itemize}
 
 \textbf{Quick prompts (Cursor and CLI):}
+\begin{promptbox}
 \begin{itemize}[leftmargin=1.2em]
   \item ``Read this folder and explain what each file is for.''
   \item ``Suggest 3 improvements to make this mini-project clearer for a beginner.''
 \end{itemize}
+\end{promptbox}
 
 \section*{Exercise A --- Write new code in Cursor (25 min)}
 Open \texttt{src/starter\_analysis.py}. There are TODOs in:
@@ -105,10 +121,12 @@ Open \texttt{src/starter\_analysis.py}. There are TODOs in:
 \end{enumerate}
 
 \textbf{Prompt examples:}
+\begin{promptbox}
 \begin{itemize}[leftmargin=1.2em]
   \item ``Implement TODO functions in this file only. Keep output deterministic and concise.''
   \item ``Before editing, explain your plan in 3 bullets; after editing, show what changed.''
 \end{itemize}
+\end{promptbox}
 
 \section*{Exercise B --- Modify code + tests (25 min)}
 Open \texttt{src/text\_utils.py}. It contains intentionally weak behavior.
@@ -121,10 +139,12 @@ Open \texttt{src/text\_utils.py}. It contains intentionally weak behavior.
 \end{enumerate}
 
 \textbf{Prompt examples:}
+\begin{promptbox}
 \begin{itemize}[leftmargin=1.2em]
   \item ``Read failing tests and patch only src/text\_utils.py. Do not change tests unless absolutely necessary.''
-  \item ``Keep functions simple and robust for edge cases (extra spaces, mixed case, punctuation).'' 
+  \item ``Keep functions simple and robust for edge cases (extra spaces, mixed case, punctuation).''
 \end{itemize}
+\end{promptbox}
 
 \section*{Exercise C --- CLI agent workflow (25 min)}
 Use Codex/Claude CLI to do a small multi-file task:
@@ -136,6 +156,7 @@ Use Codex/Claude CLI to do a small multi-file task:
 \end{enumerate}
 
 \textbf{Prompt template:}
+\begin{promptbox}
 \begin{enumerate}[leftmargin=1.4em]
   \item You are helping with a local Python project.
   \item Inspect files.
@@ -144,6 +165,7 @@ Use Codex/Claude CLI to do a small multi-file task:
   \item Do not add new dependencies.
   \item Show me exactly what you changed.
 \end{enumerate}
+\end{promptbox}
 
 \section*{Exercise D --- Plots/charts from local data (20 min)}
 Run: \verb|uv run python src/plot_metrics.py|
@@ -154,18 +176,93 @@ This should generate:
   \item \texttt{reports/accuracy\_vs\_latency.png}
 \end{itemize}
 
-\textbf{Stretch task:}
-Ask an LLM to add one more plot (example: token usage distribution by model).
+Move back to \textbf{Cursor}. In the agent chat, drag and drop
+\texttt{src/plot\_metrics.py} into the prompt box before sending your prompt.
 
-\section*{Exercise E --- Document workflow (15 min)}
-\textbf{Option 1 (fast):} update \texttt{reports/workshop\_report.md}.\\
-\textbf{Option 2 (LaTeX):} ask the LLM to generate a table from CSV summaries and paste into a \texttt{tabular} block.
-
-\textbf{Example prompt:}
+\textbf{Prompt example:}
+\begin{promptbox}
 \begin{itemize}[leftmargin=1.2em]
-  \item From \texttt{data/students\_scores.csv}, compute mean assignment/midterm/final by group,
-  and produce a LaTeX tabular snippet with booktabs formatting.
+  \item ``Using the attached file, add one additional plot:
+  token usage distribution by model. Save it as
+  \texttt{reports/tokens\_by\_model.png}. Keep existing plots unchanged,
+  add axis labels/title, and show exactly what changed.''
 \end{itemize}
+\end{promptbox}
+
+% \textbf{Stretch task:}
+Once it generated it, ask the LLM to run the script and check the output.
+
+\section*{Exercise E --- Scripted stats table generation (12 min)}
+In \textbf{Cursor}, ask the LLM to write a new script (for example:
+\texttt{src/build\_stats\_table.py}) that reads local CSV data and writes a LaTeX table to
+\texttt{reports/stats\_table.tex}.
+
+\textbf{Task:}
+\begin{enumerate}[leftmargin=1.4em]
+  \item Students must specify the table structure (rows and columns) in the prompt.
+  \item Table entries must report mean $\pm$ std for selected metrics.
+  \item Add significance stars for p-values less than \texttt{0.5}.
+  \item Save the final table as a standalone LaTeX snippet in \texttt{reports/stats\_table.tex}.
+  \item Run the script and inspect the output file.
+\end{enumerate}
+
+\textbf{Prompt example:}
+\begin{promptbox}
+\begin{itemize}[leftmargin=1.2em]
+  \item ``I attached \texttt{data/students\_scores.csv}. Create
+  \texttt{src/build\_stats\_table.py} that generates \texttt{reports/stats\_table.tex} as well as an equivalent markdown table.
+  Use rows=\{baseline, llm\_assisted\} and columns=\{assignment, midterm, final\}.
+  Each cell should show mean $\pm$ std for that group/metric.
+  Also compute a two-group p-value per metric and append stars to the metric header when
+  p-value $< 0.5$. Use booktabs formatting. After editing, run the script and show exactly what changed.'' 
+\end{itemize}
+\end{promptbox}
+
+After the LLM finishes creating the script, ask it to run the script and inspect the output file. 
+
+\section*{Exercise F --- Conference-paper LaTeX workflow (8 min)}
+Start from an online conference template (for example NeurIPS) and ask the LLM to set up
+a minimal paper draft locally.
+
+\textbf{Task:}
+\begin{enumerate}[leftmargin=1.4em]
+  \item Ask the LLM to create a new folder \texttt{paper/}.
+  \item Ask it to retrieve the NeurIPS style files from
+  \url{https://neurips.cc/Conferences/2023/PaperInformation/StyleFiles}
+  and save the \texttt{.tex} and \texttt{.sty} files into \texttt{paper/}.
+  \item Ask the LLM to compile LaTeX in \texttt{paper/}.
+  \item Then ask the LLM to include:
+  \begin{itemize}[leftmargin=1.2em]
+    \item plots from \texttt{reports/} (including \texttt{tokens\_by\_model.png}),
+    \item table from \texttt{reports/stats\_table.tex}.
+  \end{itemize}
+  \item Re-compile and verify the PDF builds.
+\end{enumerate}
+
+\textbf{Prompt examples (run as two separate prompts):}
+\textbf{Prompt 1 (setup + first compile):}
+\begin{promptbox}
+\begin{itemize}[leftmargin=1.2em]
+  \item ``Create a new folder \texttt{paper/}. From
+  \url{https://neurips.cc/Conferences/2023/PaperInformation/StyleFiles},
+  download/save the NeurIPS \texttt{.tex} template and \texttt{.sty} style file
+  into \texttt{paper/}. Then compile with \texttt{pdflatex} and show me the files created.''
+\end{itemize}
+\end{promptbox}
+
+After Prompt 1 finishes and \texttt{pdflatex} succeeds, run Prompt 2.
+
+\textbf{Prompt 2 (add figures + table):}
+\begin{promptbox}
+\begin{itemize}[leftmargin=1.2em]
+  \item ``Now edit the paper in \texttt{paper/} to include:
+  \texttt{../reports/score\_by\_group.png},
+  \texttt{../reports/accuracy\_vs\_latency.png},
+  \texttt{../reports/tokens\_by\_model.png},
+  and the table from \texttt{../reports/stats\_table.tex}.
+  Re-compile and show exactly what changed.''
+\end{itemize}
+\end{promptbox}
 
 \section*{Best practices to emphasize}
 \begin{itemize}[leftmargin=1.2em]

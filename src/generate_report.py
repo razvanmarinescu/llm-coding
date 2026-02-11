@@ -55,6 +55,13 @@ def build_report() -> str:
         "- `llm_assisted` group has higher average final scores in this toy dataset.",
         "- Larger models tend to have higher latency and higher token usage.",
         "",
+        "## Failure Modes",
+        "",
+        "- Small sample size (n=8 per group) makes results sensitive to outliers.",
+        "- No control for prior experience; group differences may reflect selection bias.",
+        "- Model accuracy was measured on a single prompt set; results may not generalise to other tasks.",
+        "- High-temperature runs can introduce variance that masks true model capability.",
+        "",
     ]
     return "\n".join(lines)
 
