@@ -18,8 +18,8 @@
 }
 
 \newtcolorbox{promptbox}{
-  colback=blue!5,
-  colframe=blue!60!black,
+  colback=green!20,
+  colframe=green!60!black,
   title=Prompt,
   width=\linewidth,
   boxsep=2mm,
@@ -28,6 +28,8 @@
   top=1mm,
   bottom=1mm
 }
+
+\newcommand{\dragpath}[1]{\textcolor{blue!70!black}{\texttt{\textless drag-and-drop #1\textgreater}}}
 
 \title{LLM Coding Workflow Workshop\\\large 2-Hour Hands-On Walkthrough}
 \author{Razvan Marinescu --- UC Santa Cruz}
@@ -42,7 +44,8 @@ By the end of this session, each participant should be able to:
   \item Use LLMs in \textbf{Cursor} to write new code and modify existing code.
   \item Use an \textbf{LLM CLI agent} (Codex or Claude CLI) for file/system operations.
   \item Build a small local data workflow: load CSV data, compute summaries, and generate plots.
-  \item Produce a short document artifact (Markdown and optional LaTeX table) generated from local data.
+  \item Produce a short document artifact (Markdown and LaTeX table) generated from local data.
+  \item Integrate the plots and tables into a LaTeX conference paper.
 \end{itemize}
 
 \section*{Materials in this folder}
@@ -120,13 +123,13 @@ Open \texttt{src/starter\_analysis.py}. There are TODOs in:
   \item Run: \verb|uv run python src/starter_analysis.py|
 \end{enumerate}
 
-\textbf{Prompt examples:}
+\textbf{Prompt example:}
 \begin{promptbox}
-\begin{itemize}[leftmargin=1.2em]
-  \item ``Implement TODO functions in this file only. Keep output deterministic and concise.''
-  \item ``Before editing, explain your plan in 3 bullets; after editing, show what changed.''
-\end{itemize}
+  \textcolor{blue!70!black}{\texttt{\textless select-and-paste lines 16--24 of src/starter\_analysis.py \textgreater}} Implement this function.
 \end{promptbox}
+\vspace{1em}
+
+Repeat for the second TODO for \texttt{find\_top\_improvers}.
 
 \section*{Exercise B --- Modify code + tests (25 min)}
 Open \texttt{src/text\_utils.py}. It contains intentionally weak behavior.
@@ -138,12 +141,11 @@ Open \texttt{src/text\_utils.py}. It contains intentionally weak behavior.
   \item Ensure all tests pass.
 \end{enumerate}
 
-\textbf{Prompt examples:}
+\textbf{Prompt example:}
 \begin{promptbox}
-\begin{itemize}[leftmargin=1.2em]
-  \item ``Read failing tests and patch only src/text\_utils.py. Do not change tests unless absolutely necessary.''
-  \item ``Keep functions simple and robust for edge cases (extra spaces, mixed case, punctuation).''
-\end{itemize}
+% \begin{itemize}[leftmargin=1.2em]
+  Read failing tests and patch only src/text\_utils.py. Do not change tests unless absolutely necessary. Keep functions simple and robust for edge cases (extra spaces, mixed case, punctuation).
+% \end{itemize}
 \end{promptbox}
 
 \section*{Exercise C --- CLI agent workflow (25 min)}
@@ -157,14 +159,9 @@ Use Codex/Claude CLI to do a small multi-file task:
 
 \textbf{Prompt template:}
 \begin{promptbox}
-\begin{enumerate}[leftmargin=1.4em]
-  \item You are helping with a local Python project.
-  \item Inspect files.
-  \item Run report generation.
-  \item Update the report with a short ``failure modes'' section.
-  \item Do not add new dependencies.
-  \item Show me exactly what you changed.
-\end{enumerate}
+% \begin{enumerate}[leftmargin=1.4em]
+  You are helping with a local Python project. Inspect files. Run report generation. Update the report with a short ``failure modes'' section. Do not add new dependencies. Show me exactly what you changed.
+% \end{enumerate}
 \end{promptbox}
 
 \section*{Exercise D --- Plots/charts from local data (20 min)}
@@ -182,9 +179,9 @@ Move back to \textbf{Cursor}. In the agent chat, drag and drop
 \textbf{Prompt example:}
 \begin{promptbox}
 \begin{itemize}[leftmargin=1.2em]
-  \item ``Using the attached file, add one additional plot:
+  \item ``\dragpath{src/plot\_metrics.py} Add one additional plot:
   token usage distribution by model. Save it as
-  \texttt{reports/tokens\_by\_model.png}. Keep existing plots unchanged,
+  reports/tokens\_by\_model.png. Keep existing plots unchanged,
   add axis labels/title, and show exactly what changed.''
 \end{itemize}
 \end{promptbox}
@@ -209,8 +206,8 @@ In \textbf{Cursor}, ask the LLM to write a new script (for example:
 \textbf{Prompt example:}
 \begin{promptbox}
 \begin{itemize}[leftmargin=1.2em]
-  \item ``I attached \texttt{data/students\_scores.csv}. Create
-  \texttt{src/build\_stats\_table.py} that generates \texttt{reports/stats\_table.tex} as well as an equivalent markdown table.
+  \item ``I attached \dragpath{data/students\_scores.csv}. Create
+  src/build\_stats\_table.py that generates reports/stats\_table.tex as well as an equivalent markdown table.
   Use rows=\{baseline, llm\_assisted\} and columns=\{assignment, midterm, final\}.
   Each cell should show mean $\pm$ std for that group/metric.
   Also compute a two-group p-value per metric and append stars to the metric header when
@@ -256,10 +253,10 @@ After Prompt 1 finishes and \texttt{pdflatex} succeeds, run Prompt 2.
 \begin{promptbox}
 \begin{itemize}[leftmargin=1.2em]
   \item ``Now edit the paper in \texttt{paper/} to include:
-  \texttt{../reports/score\_by\_group.png},
-  \texttt{../reports/accuracy\_vs\_latency.png},
-  \texttt{../reports/tokens\_by\_model.png},
-  and the table from \texttt{../reports/stats\_table.tex}.
+  \dragpath{../reports/score\_by\_group.png},
+  \dragpath{../reports/tokens\_by\_model.png},
+  \dragpath{../reports/accuracy\_vs\_latency.png},
+  and the table from \dragpath{../reports/stats\_table.tex}.
   Re-compile and show exactly what changed.''
 \end{itemize}
 \end{promptbox}
@@ -287,11 +284,10 @@ After Prompt 1 finishes and \texttt{pdflatex} succeeds, run Prompt 2.
   \item[] [ ] I can use Cursor to create and edit multi-file code changes.
   \item[] [ ] I can use an LLM CLI agent to run commands and modify files safely.
   \item[] [ ] I can generate and validate local data plots and summaries.
-  \item[] [ ] I understand at least 3 failure modes and mitigation strategies.
 \end{itemize}
 
 \vspace{1em}
-\noindent\textbf{Optional extension for next session:} multi-agent orchestration where one agent writes code, one runs tests, and one performs review.
+% \noindent\textbf{Optional extension for next session:} multi-agent orchestration where one agent writes code, one runs tests, and one performs review.
 
 \end{document}
 
